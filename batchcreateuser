@@ -1,0 +1,32 @@
+<# 
+.SYNOPSIS
+Create users in batch
+
+.NOTES
+Creating domain users in batch 
+=====================================================
+Change History
+Date        Author  Version     Description of Change
+2020.6.25   Shawn X 1.0.0       Domain user batch creation
+=====================================================
+ #>
+
+# Get-ADUser -filter * -Properties samAccountName | Select samAccountName
+$dp=Read-Host "Enter Department Name"
+$path="OU="+$dp+",OU=Core,DC=contoso,DC=com"
+$n=Read-Host "Enter Number"
+$count=1..$n
+try{
+foreach ($i in $count)
+{ $username=Read-Host "Enter name Initials"
+$username="labuser_"+$username
+$pass="P@ssw0rd"+$i
+New-AdUser -Name $username -Path $path -Enabled $True -ChangePasswordAtLogon $true -AccountPassword (ConvertTo-SecureString $pass -AsPlainText -force) -passThru 
+write-host $username + "magicnumber is" + $i
+}
+}
+catch
+{
+ Write-Verbose -Message $_.Exception.Message -Verbose
+ #exit 1
+}
